@@ -1,14 +1,15 @@
 import pandas as pd
+from Seth.DfManip import *
+from Seth.Regressions import *
+from Seth.Plots import plotData
+data = readDF()
+age = imputeDF(data)
 
-datasetDir = 'Dataset/'
-data = pd.read_csv(datasetDir + 'Data.csv')
-def mergeDFs():
-    churn = pd.read_csv(datasetDir + 'trunc_churn.csv')
-    members = pd.read_csv(datasetDir + 'trunc_members.csv')
-    transactions = pd.read_csv(datasetDir + 'trunc_transaction.csv')
-    users = pd.read_csv(datasetDir + 'trunc_users.csv')
+processDF(data)
 
-    data = churn.merge(members, on='msno').merge(transactions, on='msno').merge(users, on='msno')
-    data.to_csv(datasetDir + 'Data.csv', index=False)
+continuousColumns = ['plan_list_price', 'actual_amount_paid', 'total_secs']
 
+outputColumn = 'is_churn'
+models = performRegressions(data, continuousColumns, outputColumn)
+plotData(data, models, outputColumn)
 print('finished')
