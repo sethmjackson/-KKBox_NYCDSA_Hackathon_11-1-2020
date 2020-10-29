@@ -3,7 +3,7 @@ from Seth.DfManip import *
 from Seth.Regressions import *
 from Seth.Plots import plotData
 data = readDF()
-age = imputeDF(data)
+#age = imputeDF(data)
 
 processDF(data)
 

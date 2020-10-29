@@ -13,7 +13,7 @@ figParams= {'x': 7, 'y': 7}
 
 
 
-plt.rc('font', size=40)
+plt.rc('font', size=35)
 plt.rc('axes', labelsize=60)
 plt.rc('axes', titlesize=60)
 
