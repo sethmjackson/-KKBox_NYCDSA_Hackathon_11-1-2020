@@ -7,7 +7,7 @@ histDir = 'Output/Histograms/'
 scatterDir = 'Output/Scatterplots/'
 barDir = 'Output/Barplots/'
 
-histParams = {'kind': 'hist', 'legend': False, 'bins': 50}
+histParams = {'kind': 'hist', 'legend': False}
 barParams = {'kind': 'bar', 'legend': False}
 figParams= {'x': 7, 'y': 7}
 
@@ -29,10 +29,10 @@ nullsDir = 'Visualizations/Nulls/'
 histParams = {'kind': 'hist', 'legend': False, 'bins': 100}
 
 
-def plotData(df: pd.DataFrame, models, outputColumn):
+def plotRegressionData(df: pd.DataFrame, models, outputColumn):
     columns = df.drop(columns=[outputColumn]).columns
     gbm = models['Gradient Boost']
-    coefs = gbm.model.feature_importances_
+    coefs = gbm.modelCV.feature_importances_
 
     gbmCoefs = pd.DataFrame({'Variable': columns, 'Coefficient': coefs}).sort_values(by='Coefficient', ascending=True)
     gbmCoefs = gbmCoefs[gbmCoefs['Coefficient'] > 0.001]
@@ -45,3 +45,33 @@ def plotData(df: pd.DataFrame, models, outputColumn):
                   'ylabel': 'Variable Name',
                   'title': 'Bar Plot of Gradient Boost Feature Selection ',
                   'savefig': barDir + 'Gradient Boost Feature Selection.png'}, removeOutliersBeforePlotting=False)
+
+def plotEDA(df: pd.DataFrame):
+    churnPPD = df[df['is_churn'] == 1]
+    noChurnPPD = df[df['is_churn'] == 0]
+
+    print(churnPPD['payment_plan_days'].value_counts())
+
+    ut.plotDF(df[['payment_plan_days']], histParams,
+           {
+            #yTickFormatPercent: '',
+            'grid': None,
+            'xlabel': 'Days on Payment Plan',
+            'title': 'Histogram of Days customers are on payment plans (Total)',
+            'savefig': histDir + 'Days on Payment Plan (Total).png'})
+
+    ut.plotDF(churnPPD[['payment_plan_days']], histParams,
+              {
+                  # yTickFormatPercent: '',
+                  'grid': None,
+                  'xlabel': 'Days on Payment Plan',
+                  'title': 'Histogram of Days customers are on payment plans (Churn)',
+                  'savefig': histDir + 'Days on Payment Plan (Churn).png'})
+
+    ut.plotDF(noChurnPPD[['payment_plan_days']], histParams,
+              {
+                  # yTickFormatPercent: '',
+                  'grid': None,
+                  'xlabel': 'Days on Payment Plan',
+                  'title': 'Histogram of Days customers are on payment plans (No Churn)',
+                  'savefig': histDir + 'Days on Payment Plan (No Churn).png'})

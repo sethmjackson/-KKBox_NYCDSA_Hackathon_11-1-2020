@@ -156,7 +156,7 @@ def performRegressions(df: pd.DataFrame, continuousColumns, outputColumn):
     #     i+=1
 
     for name in models.keys():
-        models[name].time, returnValue = ut.getExecutionTime(lambda: models[name].fit(*trainTestData))
+        models[name].time, returnValue = ut.getExecutionTime(lambda: models[name].fitCV(*trainTestData))
 
     results = pd.DataFrame([r.__dict__ for r in models.values()]).drop(columns=['model', 'modelCV'])
 
