@@ -248,7 +248,7 @@ def getTime(s: str):
     seconds = split[-1]
     return float(minutes) * 60 + float(seconds)
 
-def getTimeDiff(timeDiff: float, printTime=False):
+def getTimeDiff(timeDiff: float, printTime = False):
     timeDiff = abs(timeDiff)
     seconds = timeDiff % 60
     minutes = int(timeDiff // 60)
@@ -271,12 +271,12 @@ def getTimeDiff(timeDiff: float, printTime=False):
         print(timeString,'\n')
     return timeString
 
-def getExecutionTime(fun: Callable):
+def getExecutionTime(fun: Callable, printTime = False):
     startTime = time.time()
     returnValue = fun()
     endTime = time.time()
 
-    timeString = getTimeDiff(endTime - startTime)
+    timeString = getTimeDiff(endTime - startTime, printTime)
     return timeString, returnValue
 
 def removeOutliers(S: pd.Series, inplace= False, printOutput=False):

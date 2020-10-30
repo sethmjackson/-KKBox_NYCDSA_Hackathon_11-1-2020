@@ -1,14 +1,15 @@
 import pandas as pd
 import Seth.Util as ut
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 datasetDir = 'Seth/Dataset/'
 
-def readDF():
-    data = pd.read_csv(datasetDir + 'Data (Imputed Age).csv')
+def readDF(fileName: str):
+    data = pd.read_csv(datasetDir + fileName)
     return data
 
-def writeDF(df: pd.DataFrame):
-    df.to_csv(datasetDir + 'Data Imputed.csv', index=False)
+def writeDF(df: pd.DataFrame, fileName: str):
+    df.to_csv(datasetDir + fileName, index=False)
     return df
 
 def mergeDFs():
@@ -18,8 +19,10 @@ def mergeDFs():
     transactions = pd.read_csv(datasetDir + 'trunc_transaction.csv')
     users = pd.read_csv(datasetDir + 'trunc_users.csv')
 
+    users = users.drop(columns=['date']).groupby('msno').mean()
     data = churn.merge(members, on='msno').merge(transactions, on='msno').merge(users, on='msno')
-    data.to_csv(datasetDir + 'Data.csv', index=False)
+    writeDF(data, 'Data.csv')
+    return data
 
 def processDF(df: pd.DataFrame):
     ## deal with null values
@@ -27,12 +30,12 @@ def processDF(df: pd.DataFrame):
 
     ## remove unnecessary columns
     # msno registration_init_time transaction_date membership_expire_date date gender
-    df.drop(columns=['msno', 'registration_init_time', 'transaction_date',
-                     'membership_expire_date', 'date', 'gender', 'payment_plan_days'], inplace=True)
+    ut.dropIfExists(df, columns=['msno', 'registration_init_time', 'transaction_date',
+                     'membership_expire_date', 'date', 'gender'], inplace=True)
     #print(ut.getNullPercents(df))
 
     ## alter columns
-
+    removeColumnsByVif(df, 10)
     print('DF Processed')
 
     return df
@@ -51,8 +54,8 @@ def imputeDF(df: pd.DataFrame):
             print(str(i))
         i+=1
 
-    writeDF(df)
     print('End Ages == 0: ' + str(ut.getRowsNum(df[df['bd'] == 0])))
+    writeDF(df, 'Data (Imputed Age).csv')
     return df
 
 def addColumns(df: pd.DataFrame):
@@ -75,4 +78,20 @@ def addColumns(df: pd.DataFrame):
 
 
 
+def calc_vif(X):
 
+    # Calculating VIF
+    vif = pd.DataFrame()
+    vif["variables"] = X.columns
+    vif["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
+
+    return(vif)
+
+def removeColumnsByVif(df: pd.DataFrame, vifCutoff = 5):
+    #ut.printNulls(modDF)
+    #nulls = ut.getNulls(modDF)
+    vif = calc_vif(df)
+    mcColumns = vif[vif['VIF'] > vifCutoff]['variables']
+    df.drop(columns=mcColumns, inplace=True)
+    vif = vif[vif['VIF'] <= vifCutoff]
+    return vif

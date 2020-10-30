@@ -67,6 +67,7 @@ class Regression:
 
 
     def plotHyperParams(self, trainX, testX, trainY, testY, i):
+        ut.multiplyFigSize(**{'x': 7, 'y': 7})
         for name, params in self.hyperparams.items():
             startTime = time.time()
             coefs = []
@@ -88,12 +89,16 @@ class Regression:
 
             plt.plot(params, trainScore, label=r'train set $R^2$')
             plt.plot(params, testScore, label=r'test set $R^2$')
+            plt.rc('font', size=40)
+            plt.rc('axes', labelsize=45)
+            plt.rc('axes', titlesize=45)
+
 
             plt.xlabel(name+' Value')
             plt.ylabel('R^2 Value')
             plt.title(self.name+' R^2 VS. '+ name)
             plt.legend(loc=4)
-            plt.savefig('Output/Hyperparams/'+str(i)+' - '+self.name+' '+name+'.png')
+            plt.savefig('Seth/Output/Hyperparams/'+str(i)+' - '+self.name+' '+name+'.png')
             plt.clf()
             endTime = time.time()
             print(name + ': ' + ut.getTimeDiff(endTime - startTime))
@@ -126,7 +131,7 @@ def assembleModels():
     'Gradient Boost': Regression(GradientBoostingClassifier(), 'Gradient Boost',
                {'learning_rate': np.linspace(.04, 0.7, 5),
                 'n_estimators': range(80, 100, 5),
-                'max_depth': range(10, 20, 3)}) # use feature_importances for feature selection
+                'max_depth': range(10, 20, 3)})
 
     # 'SVM': Regression(SVC(), 'Support Vector Regressor',
     #            {'C': np.linspace(1, 100, 10),
@@ -142,21 +147,24 @@ def performRegressions(df: pd.DataFrame, continuousColumns, outputColumn):
     print('Performing Regressions')
     models = assembleModels()
     y = df[outputColumn]
-    x = scaleData(df.drop(columns=[outputColumn]), continuousColumns)
 
+    if len(continuousColumns) > 0:
+        x = scaleData(df.drop(columns=[outputColumn]), continuousColumns)
+    else:
+        x = df.drop(columns=[outputColumn])
 
     trainTestData = train_test_split(x, y, test_size=0.3, random_state=0, stratify=y)
     outputRatio = len(y[y > 0]) / len(y)
 
-    #i=0
-    # for name, model in models.items():
-    #     print(name)
-    #     model.plotHyperParams(*trainTestData,i)
-    #     print('')
-    #     i+=1
+    i=0
+    for name, model in models.items():
+        print(name)
+        model.plotHyperParams(*trainTestData,i)
+        print('')
+        i+=1
 
     for name in models.keys():
-        models[name].time, returnValue = ut.getExecutionTime(lambda: models[name].fit(*trainTestData))
+        models[name].time, returnValue = ut.getExecutionTime(lambda: models[name].fitCV(*trainTestData), True)
 
     results = pd.DataFrame([r.__dict__ for r in models.values()]).drop(columns=['model', 'modelCV'])
 
