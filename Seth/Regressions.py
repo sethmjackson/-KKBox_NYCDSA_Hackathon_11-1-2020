@@ -156,7 +156,7 @@ def performRegressions(df: pd.DataFrame, continuousColumns, outputColumn):
     #     i+=1
 
     for name in models.keys():
-        models[name].time, returnValue = ut.getExecutionTime(lambda: models[name].fitCV(*trainTestData))
+        models[name].time, returnValue = ut.getExecutionTime(lambda: models[name].fit(*trainTestData))
 
     results = pd.DataFrame([r.__dict__ for r in models.values()]).drop(columns=['model', 'modelCV'])
 
@@ -165,7 +165,7 @@ def performRegressions(df: pd.DataFrame, continuousColumns, outputColumn):
     for c in roundColumns4Digits:
         results[c] = results[c].apply(ut.roundTraditional, args = (4,))
 
-    results.to_excel('Output/Model Results.xlsx')
+    results.to_excel('Seth/Output/Model Results.xlsx')
     print('Finished Regressions')
     return models
 

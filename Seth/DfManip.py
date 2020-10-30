@@ -1,14 +1,14 @@
 import pandas as pd
 import Seth.Util as ut
 
-datasetDir = 'Dataset/'
+datasetDir = 'Seth/Dataset/'
 
 def readDF():
-    data = pd.read_csv(datasetDir + 'Data.csv')
+    data = pd.read_csv(datasetDir + 'Data (Imputed Age).csv')
     return data
 
 def writeDF(df: pd.DataFrame):
-    df.to_csv(datasetDir + 'Data Imputed.csv')
+    df.to_csv(datasetDir + 'Data Imputed.csv', index=False)
     return df
 
 def mergeDFs():
@@ -28,7 +28,7 @@ def processDF(df: pd.DataFrame):
     ## remove unnecessary columns
     # msno registration_init_time transaction_date membership_expire_date date gender
     df.drop(columns=['msno', 'registration_init_time', 'transaction_date',
-                     'membership_expire_date', 'date', 'gender'], inplace=True)
+                     'membership_expire_date', 'date', 'gender', 'payment_plan_days'], inplace=True)
     #print(ut.getNullPercents(df))
 
     ## alter columns
@@ -43,6 +43,7 @@ def imputeDF(df: pd.DataFrame):
     noAgeIndexes = df[df['bd'] == 0].index
     noAgeNum = len(noAgeIndexes)
     i=0
+
     for index in noAgeIndexes:
         age = ages.sample(1)
         df.loc[index, 'bd'] = age.iloc[0]
@@ -53,4 +54,25 @@ def imputeDF(df: pd.DataFrame):
     writeDF(df)
     print('End Ages == 0: ' + str(ut.getRowsNum(df[df['bd'] == 0])))
     return df
+
+def addColumns(df: pd.DataFrame):
+    df['pop'] = pd.cut(df['city'], bins=[0, 1, 22], labels=['high', 'low'])
+
+    def generation(x):
+        if x < 21:
+            return 'genz'
+        elif x < 38:
+            return 'millennial'
+        elif x < 53:
+            return 'genx'
+        else:
+            return 'boomer'
+
+    df['gen'] = df['bd'].apply(generation)
+
+    df = pd.get_dummies(df, columns=['gen', 'pop'], drop_first=True)
+    return df
+
+
+
 

@@ -8,9 +8,9 @@ data = readDF()
 processDF(data)
 
 continuousColumns = ['plan_list_price', 'actual_amount_paid', 'total_secs']
-
+data = addColumns(data)
 outputColumn = 'is_churn'
-# models = performRegressions(data, continuousColumns, outputColumn)
-# plotRegressionData(data, models, outputColumn)
-plotEDA(data)
+models = performRegressions(data, continuousColumns, outputColumn)
+plotRegressionData(data, models, outputColumn)
+#plotEDA(data)
 print('finished')

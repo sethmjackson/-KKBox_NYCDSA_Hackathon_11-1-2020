@@ -3,19 +3,19 @@ import Seth.Util as ut
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 import matplotlib.ticker as mtick
-histDir = 'Output/Histograms/'
-scatterDir = 'Output/Scatterplots/'
-barDir = 'Output/Barplots/'
+histDir = 'Seth/Output/Histograms/'
+scatterDir = 'Seth/Output/Scatterplots/'
+barDir = 'Seth/Output/Barplots/'
 
 histParams = {'kind': 'hist', 'legend': False}
 barParams = {'kind': 'bar', 'legend': False}
-figParams= {'x': 7, 'y': 7}
+figParams= {'x': 8, 'y': 8}
 
 
 
 plt.rc('font', size=35)
-plt.rc('axes', labelsize=60)
-plt.rc('axes', titlesize=60)
+plt.rc('axes', labelsize=50)
+plt.rc('axes', titlesize=50)
 
 xTickMult = lambda: ut.multiplyRange(plt.xticks()[0], 0.5)
 xTickMultLS = lambda: ut.multiplyLinSpace(plt.xticks()[0], 2)
@@ -25,7 +25,7 @@ xTickFormatCommas = lambda: plt.gca().xaxis.set_major_formatter(mpl.ticker.StrMe
 xTickFormatDollars = lambda x=0:  plt.gca().xaxis.set_major_formatter(mpl.ticker.StrMethodFormatter('${x:,.'+str(x)+'f}'))
 #setTickIn = lambda: plt.gca().tick_params(axis='x', direction='in')
 trimTicks = lambda: plt.xticks()[0:-1]
-nullsDir = 'Visualizations/Nulls/'
+nullsDir = 'Seth/Visualizations/Nulls/'
 histParams = {'kind': 'hist', 'legend': False, 'bins': 100}
 
 
