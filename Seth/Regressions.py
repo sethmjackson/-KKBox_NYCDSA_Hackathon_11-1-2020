@@ -156,12 +156,12 @@ def performRegressions(df: pd.DataFrame, continuousColumns, outputColumn):
     trainTestData = train_test_split(x, y, test_size=0.3, random_state=0, stratify=y)
     outputRatio = len(y[y > 0]) / len(y)
 
-    i=0
-    for name, model in models.items():
-        print(name)
-        model.plotHyperParams(*trainTestData,i)
-        print('')
-        i+=1
+    # i=0
+    # for name, model in models.items():
+    #     print(name)
+    #     model.plotHyperParams(*trainTestData,i)
+    #     print('')
+    #     i+=1
 
     for name in models.keys():
         models[name].time, returnValue = ut.getExecutionTime(lambda: models[name].fitCV(*trainTestData), True)

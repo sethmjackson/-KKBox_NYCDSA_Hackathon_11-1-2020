@@ -76,7 +76,7 @@ def plotPaymentPlanDays(df: pd.DataFrame):
                   'title': 'Histogram of Days customers are on payment plans (No Churn)',
                   'savefig': histDir + 'Days on Payment Plan (No Churn).png'})
 
-def plotFeatures(df: pd.DataFrame):
+def plotActualAmountPaid(df: pd.DataFrame):
     releventColumns = ['actual_amount_paid',
     'plan_list_price',
     'is_auto_renew',
@@ -109,3 +109,33 @@ def plotFeatures(df: pd.DataFrame):
             'xlabel': 'Actual Amount Paid',
             'title': 'Histogram of Actual Amount Paid (No Churn)',
             'savefig': histDir + 'Acutal Amount Paid (No Churn).png'})
+
+def plotChurn(df: pd.DataFrame, column: str):
+    columnC = column.capitalize()
+    churnPPD = df[df['is_churn'] == 1]
+    noChurnPPD = df[df['is_churn'] == 0]
+
+
+    ut.plotDF(df[[column]], histParams,
+           {
+            #yTickFormatPercent: '',
+            'grid': None,
+            'xlabel': columnC,
+            'title': 'Histogram of ' + columnC,
+            'savefig': histDir + columnC + '.png'})
+
+    ut.plotDF(churnPPD[[column]], histParams,
+           {
+            #yTickFormatPercent: '',
+            'grid': None,
+            'xlabel': columnC,
+            'title': 'Histogram of ' + columnC + ' (Churn)',
+            'savefig': histDir + columnC + ' (Churn).png'})
+
+    ut.plotDF(noChurnPPD[[column]], histParams,
+           {
+            #yTickFormatPercent: '',
+            'grid': None,
+            'xlabel': columnC,
+            'title': 'Histogram of ' + columnC + ' (No Churn)',
+            'savefig': histDir + columnC + ' (No Churn).png'})
